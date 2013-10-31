@@ -37,7 +37,7 @@ public class DBAdapter {
     private SQLiteDatabase mDb;
 
     private static final String CHANNELS_TABLE = "channels";
-    private static final String DATABASE_NAME = "touristDatabase3";
+    private static final String DATABASE_NAME = "touristDatabase42";
     private static final int DATABASE_VERSION = 1;
 
     private static final String INIT_CHANNELS =
@@ -131,10 +131,11 @@ public class DBAdapter {
         return mDb.insert(KEY_CHANNEL + channelID, null, initialValues);
     }
 
-    public long createChannel(String title, String url) {
+    public long createChannel(String title, String url, String cTime) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_C_TITLE, title);
         initialValues.put(KEY_C_URL, url);
+        initialValues.put(KEY_C_TIME, cTime);
         return mDb.insert(CHANNELS_TABLE, null, initialValues);
     }
 
@@ -153,15 +154,10 @@ public class DBAdapter {
                 KEY_A_SUMMARY, KEY_A_LINK}, null, null, null, null, null);
     }
 
-    public boolean updateChannel(long rowId, String title, String url) {
+    public boolean updateChannel(long rowId, String title, String url, String cTime) {
         ContentValues args = new ContentValues();
         args.put(KEY_C_TITLE, title);
         args.put(KEY_C_URL, url);
-        return mDb.update(CHANNELS_TABLE, args, KEY_ROW_ID + "=" + rowId, null) > 0;
-    }
-
-    public boolean updateChannelTime(long rowId, String cTime) {
-        ContentValues args = new ContentValues();
         args.put(KEY_C_TIME, cTime);
         return mDb.update(CHANNELS_TABLE, args, KEY_ROW_ID + "=" + rowId, null) > 0;
     }

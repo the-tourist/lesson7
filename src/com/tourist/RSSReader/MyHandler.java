@@ -1,5 +1,6 @@
 package com.tourist.RSSReader;
 
+import android.util.Log;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -71,13 +72,19 @@ public class MyHandler extends DefaultHandler {
                 insideItem = false;
                 break;
             case SUMMARY:
-                summary = sb.toString();
+                if (sb.length() > 0) {
+                    summary = sb.toString();
+                }
                 break;
             case LINK:
-                link = sb.toString();
+                if (sb.length() > 0) {
+                    link = sb.toString();
+                }
                 break;
             case TITLE:
-                title = sb.toString();
+                if (sb.length() > 0) {
+                    title = sb.toString();
+                }
         }
     }
 }

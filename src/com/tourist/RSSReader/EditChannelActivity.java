@@ -11,6 +11,7 @@ public class EditChannelActivity extends Activity {
 
     String channelURL = null;
     String channelTitle = null;
+    String channelTime = null;
     int channelID = 0;
 
     boolean add = false;
@@ -36,6 +37,7 @@ public class EditChannelActivity extends Activity {
         }
         channelURL = intent.getStringExtra("channelURL");
         channelTitle = intent.getStringExtra("channelTitle");
+        channelTime = intent.getStringExtra("channelTime");
         channelID = Integer.parseInt(intent.getStringExtra("channelID"));
         editTitle = (EditText) findViewById(R.id.editTitle);
         editURL = (EditText) findViewById(R.id.editURL);
@@ -43,20 +45,17 @@ public class EditChannelActivity extends Activity {
         editURL.setText(channelURL);
     }
 
-    @Override
-    public void onStop() {
-        if (add) {
-            deleteChannel();
-        }
-        super.onStop();
-    }
-
     public void editChannel(View view) {
         channelTitle = editTitle.getText().toString();
         channelURL = editURL.getText().toString();
         DBAdapter myDBAdapter = new DBAdapter(this);
         myDBAdapter.open();
-        myDBAdapter.updateChannel(channelID, channelTitle, channelURL);
+        if (add) {
+            long channelID = myDBAdapter.createChannel(channelTitle, channelURL, "never");
+            myDBAdapter.createChannelTable(channelID);
+        } else {
+            myDBAdapter.updateChannel(channelID, channelTitle, channelURL, channelTime);
+        }
         myDBAdapter.close();
         this.finish();
     }
@@ -66,10 +65,12 @@ public class EditChannelActivity extends Activity {
     }
 
     public void deleteChannel() {
-        DBAdapter myDBAdapter = new DBAdapter(this);
-        myDBAdapter.open();
-        myDBAdapter.deleteChannel(channelID);
-        myDBAdapter.close();
+        if (!add) {
+            DBAdapter myDBAdapter = new DBAdapter(this);
+            myDBAdapter.open();
+            myDBAdapter.deleteChannel(channelID);
+            myDBAdapter.close();
+        }
         this.finish();
     }
 }

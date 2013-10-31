@@ -30,12 +30,16 @@ public class MyIntentService extends IntentService {
     ArrayList<String> titles;
 
     String channelURL = null;
+    String channelTitle = null;
+    String channelTime = null;
     int channelID = 0;
 
     @Override
     public void onHandleIntent(Intent intent) {
         Log.i("MyIntentService", "entered onHandleIntent");
         channelURL = intent.getStringExtra("channelURL");
+        channelTitle = intent.getStringExtra("channelTitle");
+        channelTime = intent.getStringExtra("channelTime");
         channelID = Integer.parseInt(intent.getStringExtra("channelID"));
         String result = "";
         try {
@@ -54,22 +58,23 @@ public class MyIntentService extends IntentService {
             result = e.getMessage();
         }
         Intent response = new Intent();
-        response.setAction(key + channelID);
+        response.setAction(key);
         response.addCategory(Intent.CATEGORY_DEFAULT);
         DBAdapter myDBAdapter = new DBAdapter(this);
         myDBAdapter.open();
+        response.putExtra("channelTitle", channelTitle);
         response.putExtra("result", result);
         if ("good".equals(result)) {
             myDBAdapter.clearChannelTable(channelID);
             for (int i = 0; i < summaries.size(); i++) {
                 myDBAdapter.addNews(channelID, summaries.get(i), links.get(i), titles.get(i));
             }
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm:ss");
+            channelTime = sdf.format(calendar.getTime());
         }
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm:ss");
-        String moment = sdf.format(calendar.getTime());
-        response.putExtra("cTime", moment);
-        myDBAdapter.updateChannelTime(channelID, moment);
+        response.putExtra("cTime", channelTime);
+        myDBAdapter.updateChannel(channelID, channelTitle, channelURL, channelTime);
         myDBAdapter.close();
         sendBroadcast(response);
     }

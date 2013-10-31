@@ -30,10 +30,12 @@ public class EditorActivity extends Activity {
                 Intent intent = new Intent(view.getContext(), EditChannelActivity.class);
                 cursor.moveToPosition(position);
                 String title = cursor.getString(cursor.getColumnIndexOrThrow(DBAdapter.KEY_C_TITLE));
+                String time = cursor.getString(cursor.getColumnIndexOrThrow(DBAdapter.KEY_C_TIME));
                 String url = cursor.getString(cursor.getColumnIndexOrThrow(DBAdapter.KEY_C_URL));
                 int ID = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(DBAdapter.KEY_ROW_ID)));
                 intent.putExtra("channelURL", url);
                 intent.putExtra("channelTitle", title);
+                intent.putExtra("channelTime", time);
                 intent.putExtra("channelID", "" + ID);
                 intent.putExtra("type", "edit");
                 startActivity(intent);
@@ -42,12 +44,11 @@ public class EditorActivity extends Activity {
     }
 
     public void addChannel(View view) {
-        long channelID = myDBAdapter.createChannel("", "");
-        myDBAdapter.createChannelTable(channelID);
         Intent intent = new Intent(view.getContext(), EditChannelActivity.class);
         intent.putExtra("channelURL", "");
         intent.putExtra("channelTitle", "");
-        intent.putExtra("channelID", "" + channelID);
+        intent.putExtra("channelTime", "never");
+        intent.putExtra("channelID", "0");
         intent.putExtra("type", "add");
         startActivity(intent);
     }
